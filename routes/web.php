@@ -1,6 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/jalankan-migrasi', function () {
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        return "Selamat! Tabel database SQLite berhasil dibuat di server Wasmer.";
+    } catch (\Exception $e) {
+        return "Gagal migrasi: " . $e->getMessage();
+    }
+});
 
 Route::get('/', function () {
     return view('home');
