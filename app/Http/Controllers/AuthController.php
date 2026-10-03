@@ -21,7 +21,8 @@ class AuthController extends Controller
             // Memastikan nomor telepon wajib diisi dan harus unik (belum terdaftar di tabel users)
             'phone_number' => 'required|string|unique:users,phone_number',
             'address'      => 'required|string',
-            'pin'          => 'required|string|size:6',
+            // PIN wajib diisi, bertipe string, dan harus tepat 6 digit angka (0-9)
+            'pin'          => 'required|string|digits:6',
         ]);
 
         // Jika validasi gagal (misal nomor telepon sudah ada), kembalikan pesan error sesuai spesifikasi
@@ -93,6 +94,29 @@ class AuthController extends Controller
             'result' => [
                 'access_token' => $accessToken,
                 'refresh_token' => $refreshToken
+            ]
+        ], 200);
+    }
+
+    /**
+     * FITUR: PROFIL USER YANG SEDANG LOGIN
+     *
+     * Dipakai halaman view untuk menampilkan nama user dan saldo terkini
+     * tanpa perlu mengetahui user_id (UUID) miliknya.
+     */
+    public function profile(Request $request)
+    {
+        $user = Auth::user();
+
+        return response()->json([
+            'status' => 'SUCCESS',
+            'result' => [
+                'user_id'      => $user->user_id,
+                'first_name'   => $user->first_name,
+                'last_name'    => $user->last_name,
+                'phone_number' => $user->phone_number,
+                'address'      => $user->address,
+                'balance'      => (int) $user->balance,
             ]
         ], 200);
     }

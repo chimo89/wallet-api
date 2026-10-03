@@ -14,5 +14,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/pay', [WalletController::class, 'pay']);
     Route::post('/transfer', [WalletController::class, 'transfer']);
     Route::get('/transactions', [WalletController::class, 'transactionReport']);
+    Route::get('/profile', [AuthController::class, 'profile']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
 });

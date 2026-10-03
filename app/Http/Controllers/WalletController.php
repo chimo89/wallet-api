@@ -135,8 +135,9 @@ class WalletController extends Controller
     public function transfer(Request $request)
     {
         // 1. Validasi Input JSON (target_user, amount, dan remarks wajib ada)
+        //    PENTING: target_user sekarang berisi NOMOR HP penerima, bukan lagi UUID/user_id.
         $validator = Validator::make($request->all(), [
-            'target_user' => 'required|uuid', // Memastikan target_user berbentuk UUID valid
+            'target_user' => 'required|string|max:20',
             'amount' => 'required|numeric|min:1',
             'remarks' => 'required|string',
         ]);
@@ -159,15 +160,15 @@ class WalletController extends Controller
             ], 400);
         }
 
-        // 4. Cari Data User Penerima berdasarkan UUID target_user
-        $receiver = \App\Models\User::where('user_id', $request->target_user)->first();
+        // 4. Cari Data User Penerima berdasarkan NOMOR HP (kolom phone_number)
+        $receiver = \App\Models\User::where('phone_number', $request->target_user)->first();
 
-        // Validasi opsional jika target user tidak terdaftar
+        // Jika nomor HP penerima tidak terdaftar
         if (!$receiver) {
             return response()->json([
                 'status' => 'FAILED',
                 'message' => 'Target user not found'
-            ], 44);
+            ], 404); // 404 Not Found (sebelumnya tertulis 44 yang bukan kode HTTP valid)
         }
 
          // Validasi opsional agar tidak bisa transfer ke diri sendiri
